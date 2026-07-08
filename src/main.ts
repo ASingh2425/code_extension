@@ -59,83 +59,91 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStats() {
         chrome.storage.sync.get(['github_token', 'github_repo'], (syncItems) => {
             if (syncItems.github_token && syncItems.github_repo) {
-                // Fetch the live repo tree from GitHub to seed/get the absolute accurate total count
-                fetch(`https://api.github.com/repos/${syncItems.github_repo}/git/trees/main?recursive=1`, {
-                    headers: {
-                        'Authorization': `token ${syncItems.github_token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                })
-                .then(res => {
-                    if (res.status === 404) {
-                        return fetch(`https://api.github.com/repos/${syncItems.github_repo}/git/trees/master?recursive=1`, {
-                            headers: {
-                                'Authorization': `token ${syncItems.github_token}`,
-                                'Accept': 'application/vnd.github.v3+json'
-                            }
-                        });
-                    }
-                    return res;
-                })
-                .then(res => res.json())
-                .then(data => {
-                    let githubTotal = 0;
-                    if (data.tree) {
-                        // Count unique directories under platforms (each represents a challenge)
-                        const solutionDirs = new Set(
-                            data.tree
-                                .filter((file: any) => {
-                                    const path = file.path;
-                                    const isPlatform = path.startsWith('LeetCode/') || 
-                                                       path.startsWith('CodeChef/') || 
-                                                       path.startsWith('GeeksforGeeks/') || 
-                                                       path.startsWith('HackerRank/');
-                                    return isPlatform && (path.includes('/Solution.') || path.endsWith('/metadata.json'));
-                                })
-                                .map((file: any) => {
-                                    const parts = file.path.split('/');
-                                    parts.pop(); // remove file name
-                                    return parts.join('/');
-                                })
-                        );
-                        githubTotal = solutionDirs.size;
-                    }
+                const headers = {
+                    'Authorization': `token ${syncItems.github_token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                };
 
-                    chrome.storage.local.get({ synced_submissions: [] }, (localRes) => {
-                        const history = localRes.synced_submissions as any[];
+                // Fetch 1: Git Tree API for absolute total solved count
+                const treePromise = fetch(`https://api.github.com/repos/${syncItems.github_repo}/git/trees/main?recursive=1`, { headers })
+                    .then(res => res.status === 404 ? fetch(`https://api.github.com/repos/${syncItems.github_repo}/git/trees/master?recursive=1`, { headers }) : res)
+                    .then(res => res.json())
+                    .catch(() => ({ tree: [] }));
+
+                // Fetch 2: Commits API to reconstruct active history for Today count and Streaks
+                const commitsPromise = fetch(`https://api.github.com/repos/${syncItems.github_repo}/commits?per_page=100`, { headers })
+                    .then(res => res.json())
+                    .catch(() => []);
+
+                Promise.all([treePromise, commitsPromise])
+                    .then(([treeData, commitsData]) => {
+                        let totalSolved = 0;
                         
-                        // Today count
+                        // 1. Calculate Total Solved from Repository Tree
+                        if (treeData.tree && Array.isArray(treeData.tree)) {
+                            const solutionDirs = new Set(
+                                treeData.tree
+                                    .filter((file: any) => {
+                                        const path = file.path;
+                                        const isPlatform = path.startsWith('LeetCode/') || 
+                                                           path.startsWith('CodeChef/') || 
+                                                           path.startsWith('GeeksforGeeks/') || 
+                                                           path.startsWith('HackerRank/');
+                                        return isPlatform && (path.includes('/Solution.') || path.endsWith('/metadata.json'));
+                                    })
+                                    .map((file: any) => {
+                                        const parts = file.path.split('/');
+                                        parts.pop(); // remove file name
+                                        return parts.join('/');
+                                    })
+                            );
+                            totalSolved = solutionDirs.size;
+                        }
+
+                        // 2. Parse commits to rebuild timeline
+                        const history: any[] = [];
+                        if (Array.isArray(commitsData)) {
+                            for (const item of commitsData) {
+                                const message = item.commit?.message || '';
+                                const date = item.commit?.author?.date || item.commit?.committer?.date;
+                                if (date && message.toLowerCase().startsWith('add solution')) {
+                                    history.push({ date });
+                                }
+                            }
+                        }
+
+                        // 3. Calculate Today Count
                         const todayStr = new Date().toLocaleDateString();
                         const todayCount = history.filter(h => new Date(h.date).toLocaleDateString() === todayStr).length;
-                        
-                        // Day streak
-                        const streak = calculateStreak(history);
-                        
-                        // Total solved is the max of live GitHub count and local history
-                        const totalSolved = Math.max(githubTotal, history.length);
 
-                        // Render to UI
+                        // 4. Calculate Day Streak
+                        const streak = calculateStreak(history);
+
+                        // Render UI
                         document.getElementById('today-solves')!.textContent = todayCount.toString();
                         document.getElementById('total-solves')!.textContent = totalSolved.toString();
                         document.getElementById('current-streak')!.textContent = streak.toString();
+
+                        // Sync history back to local storage as a cache
+                        if (history.length > 0) {
+                            chrome.storage.local.set({ synced_submissions: history });
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Failed to update stats from GitHub APIs:', err);
+                        // Local storage fallback
+                        chrome.storage.local.get({ synced_submissions: [] }, (localRes) => {
+                            const history = localRes.synced_submissions as any[];
+                            const todayStr = new Date().toLocaleDateString();
+                            const todayCount = history.filter(h => new Date(h.date).toLocaleDateString() === todayStr).length;
+                            const streak = calculateStreak(history);
+                            
+                            document.getElementById('today-solves')!.textContent = todayCount.toString();
+                            document.getElementById('total-solves')!.textContent = history.length.toString();
+                            document.getElementById('current-streak')!.textContent = streak.toString();
+                        });
                     });
-                })
-                .catch(err => {
-                    console.error('Failed to query GitHub tree API:', err);
-                    // Fallback to local storage only if network call fails
-                    chrome.storage.local.get({ synced_submissions: [] }, (localRes) => {
-                        const history = localRes.synced_submissions as any[];
-                        const todayStr = new Date().toLocaleDateString();
-                        const todayCount = history.filter(h => new Date(h.date).toLocaleDateString() === todayStr).length;
-                        const streak = calculateStreak(history);
-                        
-                        document.getElementById('today-solves')!.textContent = todayCount.toString();
-                        document.getElementById('total-solves')!.textContent = history.length.toString();
-                        document.getElementById('current-streak')!.textContent = streak.toString();
-                    });
-                });
             } else {
-                // If not configured, set stats to 0
                 document.getElementById('today-solves')!.textContent = '0';
                 document.getElementById('total-solves')!.textContent = '0';
                 document.getElementById('current-streak')!.textContent = '0';
