@@ -7,10 +7,14 @@ export class SyncQueueManager {
     private isSyncing = false;
 
     constructor() {
-        // We'll initialize the RepoManager later once OAuth is handled
-        chrome.storage.local.get(['github_token', 'github_owner', 'github_repo'], (result) => {
-            if (result.github_token && result.github_owner && result.github_repo) {
-                this.repoManager = new RepoManager(result.github_token as string, result.github_owner as string, result.github_repo as string);
+        // Initialize RepoManager from sync storage where settings are saved
+        this.loadSettings();
+
+        // Listen for settings changes
+        chrome.storage.onChanged.addListener((changes, area) => {
+            if (area === 'sync' && (changes.github_token || changes.github_owner || changes.github_repo)) {
+                console.log('GitHub settings updated, reloading RepoManager...');
+                this.loadSettings();
             }
         });
 
@@ -22,6 +26,20 @@ export class SyncQueueManager {
 
     setRepoManager(manager: RepoManager) {
         this.repoManager = manager;
+    }
+
+    private loadSettings() {
+        chrome.storage.sync.get(['github_token', 'github_owner', 'github_repo'], (result) => {
+            if (result.github_token && result.github_owner && result.github_repo) {
+                this.repoManager = new RepoManager(result.github_token as string, result.github_owner as string, result.github_repo as string);
+                console.log('RepoManager initialized successfully.');
+                // Try syncing if we had items pending before settings were set
+                this.syncPending();
+            } else {
+                console.log('Missing GitHub credentials in settings.');
+                this.repoManager = null;
+            }
+        });
     }
 
     async enqueue(submission: SubmissionData) {
