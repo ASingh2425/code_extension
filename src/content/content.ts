@@ -3,6 +3,7 @@ import { LeetCodeDetector } from '../detectors/leetcode';
 import { AllCSNotesDetector } from '../detectors/allcsnotes';
 import { GfgDetector } from '../detectors/gfg';
 import { HackerRankDetector } from '../detectors/hackerrank';
+import { CodeChefDetector } from '../detectors/codechef';
 
 console.log('CodeSync Content Script Initialized');
 
@@ -35,5 +36,8 @@ if (host.includes('leetcode.com')) {
 } else if (host.includes('hackerrank.com')) {
     console.log('Loading HackerRank Detector');
     new HackerRankDetector().startObserving(handleAcceptedSubmission);
+} else if (host.includes('codechef.com')) {
+    console.log('Loading CodeChef Detector');
+    new CodeChefDetector().startObserving(handleAcceptedSubmission);
 }
 
