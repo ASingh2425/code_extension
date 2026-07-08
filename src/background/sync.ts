@@ -31,8 +31,12 @@ export class SyncQueueManager {
     private loadSettings() {
         chrome.storage.sync.get(['github_token', 'github_owner', 'github_repo'], (result) => {
             if (result.github_token && result.github_owner && result.github_repo) {
-                this.repoManager = new RepoManager(result.github_token as string, result.github_owner as string, result.github_repo as string);
-                console.log('RepoManager initialized successfully.');
+                let repoName = result.github_repo as string;
+                if (repoName.includes('/')) {
+                    repoName = repoName.split('/')[1];
+                }
+                this.repoManager = new RepoManager(result.github_token as string, result.github_owner as string, repoName);
+                console.log('RepoManager initialized successfully with repo:', repoName);
                 // Try syncing if we had items pending before settings were set
                 this.syncPending();
             } else {
