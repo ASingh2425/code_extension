@@ -67,6 +67,24 @@ export class CodeChefDetector implements IPlatformDetector {
                 }
             }
 
+            // Extract difficulty from CodeChef rating (e.g. "Difficulty Rating: 1450" -> Medium)
+            let difficulty = 'Uncategorized';
+            const diffEl = Array.from(document.querySelectorAll('div, span, p')).find(el => {
+                const text = el.textContent?.toLowerCase() || '';
+                return text.includes('difficulty rating') || text.includes('difficulty:') || text.includes('rating:');
+            });
+            if (diffEl && diffEl.textContent) {
+                const match = diffEl.textContent.match(/\d+/);
+                if (match) {
+                    const rating = parseInt(match[0], 10);
+                    if (rating < 1000) difficulty = 'Beginner';
+                    else if (rating < 1400) difficulty = 'Easy';
+                    else if (rating < 1800) difficulty = 'Medium';
+                    else if (rating < 2200) difficulty = 'Hard';
+                    else difficulty = 'Challenging';
+                }
+            }
+
             // Fallback DOM code scraping (in case Monaco API call fails)
             const codeLines = Array.from(document.querySelectorAll('.view-line'));
             const fallbackCode = codeLines.map(line => line.textContent || '').join('\n');
@@ -75,7 +93,7 @@ export class CodeChefDetector implements IPlatformDetector {
                 platform: this.getPlatformName(),
                 problemName: problemName,
                 problemNumber: problemSlug, // CodeChef uses problem codes like FLOW001 as identifier
-                difficulty: 'Uncategorized', // CodeChef difficulty is loaded asynchronously, default to Uncategorized
+                difficulty: difficulty,
                 language: language.toLowerCase(),
                 code: fallbackCode || `// Solution for ${problemName} on CodeChef`,
                 submissionDate: new Date().toISOString(),
