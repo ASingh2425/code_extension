@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "CodeSync",
+  "version": "1.0.0",
+  "description": "Automatically sync accepted coding solutions from any coding platform to GitHub.",
+  "permissions": [
+    "storage",
+    "identity",
+    "alarms"
+  ],
+  "host_permissions": [
+    "*://*.github.com/*",
+    "https://api.github.com/*",
+    "*://leetcode.com/problems/*",
+    "*://*.allcsnotes.com/*",
+    "*://*.geeksforgeeks.org/problems/*"
+  ],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://leetcode.com/problems/*",
+        "*://*.allcsnotes.com/*",
+        "*://*.geeksforgeeks.org/problems/*"
+      ],
+      "js": ["src/content/index.ts"]
+    }
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "128": "public/vite.svg"
+  }
+}
