@@ -12,10 +12,18 @@ export class LeetCodeDetector implements IPlatformDetector {
         const observer = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
                 if (mutation.type === 'childList') {
-                    // This is a naive check; a production version would specifically look for the 
                     // success banner or intercept the GraphQL submission response.
-                    const successElement = document.querySelector('[data-e2e-locator="submission-result"]');
-                    if (successElement && successElement.textContent?.includes('Accepted')) {
+                    const successSelectors = '[data-e2e-locator="submission-result"], [data-e2e-locator="console-result"], .text-green-s, .text-success, [class*="success"]';
+                    const successElements = document.querySelectorAll(successSelectors);
+                    
+                    let isAccepted = false;
+                    successElements.forEach(el => {
+                        if (el.textContent?.includes('Accepted')) {
+                            isAccepted = true;
+                        }
+                    });
+
+                    if (isAccepted) {
                         console.log('LeetCode Accepted submission detected!');
                         this.extractAndSend(onAccepted);
                         // Temporarily disconnect to prevent duplicate triggers for the same submission
