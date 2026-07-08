@@ -42,14 +42,27 @@ export class HackerRankDetector implements IPlatformDetector {
     }
 
     private extractAndSend(onAccepted: (submission: SubmissionData) => void): void {
-        const titleEl = document.querySelector('.hr_tour-challenge-name, [class*="challenge-title"]');
-        const problemName = titleEl ? titleEl.textContent || 'Unknown Problem' : 'Unknown Problem';
+        const urlParts = window.location.pathname.split('/');
+        const challengeIdx = urlParts.indexOf('challenges');
+        let problemSlug = 'Unknown';
+        if (challengeIdx !== -1 && urlParts[challengeIdx + 1]) {
+            problemSlug = urlParts[challengeIdx + 1];
+        }
+
+        // Fallback title parsed from the URL (e.g. "arrays-ds" -> "Arrays Ds")
+        let problemName = problemSlug.replace(/_/g, ' ').split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+        // Overwrite with actual heading if we can find it in the DOM
+        const titleEl = document.querySelector('h1, h2, .hr_tour-challenge-name, [class*="challenge-title"]');
+        if (titleEl && titleEl.textContent && !titleEl.textContent.includes('Solution') && !titleEl.textContent.includes('Prepare')) {
+            problemName = titleEl.textContent.trim();
+        }
 
         const langDropdown = document.querySelector('.select2-selection__rendered, [class*="language-select"]');
         const language = langDropdown ? langDropdown.textContent || 'unknown' : 'unknown';
 
-        // Try to find the problem difficulty if displayed in header
-        let difficulty = 'Unknown';
+        // Try to find the problem difficulty if displayed on the page
+        let difficulty = 'Uncategorized';
         const diffBadge = Array.from(document.querySelectorAll('span, div')).find(el => {
             const text = el.textContent?.trim().toLowerCase();
             return text === 'easy' || text === 'medium' || text === 'hard';
