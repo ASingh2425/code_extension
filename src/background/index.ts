@@ -10,5 +10,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const payload = message.payload as SubmissionData;
         console.log('Background received submission:', payload);
         queueManager.enqueue(payload);
+        sendResponse({ status: 'queued' });
+    } else if (message.type === 'FORCE_SYNC') {
+        console.log('Background forcing sync...');
+        queueManager.syncPending();
+        sendResponse({ status: 'sync_started' });
     }
+    return true;
 });
