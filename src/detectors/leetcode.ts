@@ -58,14 +58,22 @@ export class LeetCodeDetector implements IPlatformDetector {
                 }
             }
 
-            // Extract difficulty
+            // Extract difficulty robustly (avoid matching sidebar links by checking exact text and badge classes)
             let difficulty = 'Unknown';
-            if (document.querySelector('.text-easy-s, .text-difficulty-easy, [class*="easy"]')) {
-                difficulty = 'Easy';
-            } else if (document.querySelector('.text-medium-s, .text-difficulty-medium, [class*="medium"]')) {
-                difficulty = 'Medium';
-            } else if (document.querySelector('.text-hard-s, .text-difficulty-hard, [class*="hard"]')) {
-                difficulty = 'Hard';
+            const diffBadge = Array.from(document.querySelectorAll('div, span')).find(el => {
+                const text = el.textContent?.trim();
+                return (text === 'Easy' || text === 'Medium' || text === 'Hard') && 
+                       (el.classList.contains('text-green-s') || 
+                        el.classList.contains('text-easy-s') ||
+                        el.classList.contains('text-yellow') || 
+                        el.classList.contains('text-medium-s') ||
+                        el.classList.contains('text-brand-orange') ||
+                        el.classList.contains('text-pink') || 
+                        el.classList.contains('text-hard-s') ||
+                        Array.from(el.classList).some(c => c.includes('difficulty')));
+            });
+            if (diffBadge) {
+                difficulty = diffBadge.textContent?.trim() || 'Unknown';
             }
 
             // Extract language
