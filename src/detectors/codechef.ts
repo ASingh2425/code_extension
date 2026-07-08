@@ -55,13 +55,24 @@ export class CodeChefDetector implements IPlatformDetector {
 
     private extractAndSend(onAccepted: (submission: SubmissionData) => void): void {
         try {
-            // URL format: https://www.codechef.com/problems/FLOW001 or similar
             const urlParts = window.location.pathname.split('/');
             const problemSlug = urlParts[urlParts.length - 1] || 'Unknown';
             let problemName = problemSlug.replace(/_/g, ' ').split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            // Find a clean title from the DOM, filtering out site headers, promotional banners, and AI Tutors
+            const titleEl = Array.from(document.querySelectorAll('h1, h2, h3, .problem-title, [class*="problem-title"]')).find(el => {
+                const text = el.textContent?.trim() || '';
+                return text.length > 0 &&
+                       text.length < 80 && 
+                       !text.includes('\n') && 
+                       !text.toLowerCase().includes('tutor') &&
+                       !text.toLowerCase().includes('codechef') &&
+                       !text.toLowerCase().includes('switch') &&
+                       !text.toLowerCase().includes('ai') &&
+                       !text.toLowerCase().includes('sign') &&
+                       !text.toLowerCase().includes('log') &&
+                       !text.toLowerCase().includes('register');
+            });
 
-            // Try to extract a clean title from the DOM
-            const titleEl = document.querySelector('h1, h2, .problem-title');
             if (titleEl && titleEl.textContent) {
                 problemName = titleEl.textContent.trim();
             }
