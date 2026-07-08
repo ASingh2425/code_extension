@@ -58,22 +58,32 @@ export class LeetCodeDetector implements IPlatformDetector {
                 }
             }
 
-            // Extract difficulty robustly (avoid matching sidebar links by checking exact text and badge classes)
+            // Extract difficulty robustly (proximity-based search relative to title, with global fallback)
             let difficulty = 'Unknown';
-            const diffBadge = Array.from(document.querySelectorAll('div, span')).find(el => {
-                const text = el.textContent?.trim();
-                return (text === 'Easy' || text === 'Medium' || text === 'Hard') && 
-                       (el.classList.contains('text-green-s') || 
-                        el.classList.contains('text-easy-s') ||
-                        el.classList.contains('text-yellow') || 
-                        el.classList.contains('text-medium-s') ||
-                        el.classList.contains('text-brand-orange') ||
-                        el.classList.contains('text-pink') || 
-                        el.classList.contains('text-hard-s') ||
-                        Array.from(el.classList).some(c => c.includes('difficulty')));
-            });
-            if (diffBadge) {
-                difficulty = diffBadge.textContent?.trim() || 'Unknown';
+            const titleEl = document.querySelector('div.text-title-large, div.text-lg.text-label-1, h4, [class*="title"]');
+            if (titleEl) {
+                let parent = titleEl.parentElement;
+                for (let i = 0; i < 4 && parent; i++) {
+                    const badge = Array.from(parent.querySelectorAll('div, span')).find(el => {
+                        const text = el.textContent?.trim();
+                        return text === 'Easy' || text === 'Medium' || text === 'Hard';
+                    });
+                    if (badge) {
+                        difficulty = badge.textContent!.trim();
+                        break;
+                    }
+                    parent = parent.parentElement;
+                }
+            }
+
+            if (difficulty === 'Unknown') {
+                const easyEl = document.querySelector('.text-easy-s, .text-difficulty-easy, .text-green-s, .text-olive');
+                const mediumEl = document.querySelector('.text-medium-s, .text-difficulty-medium, .text-yellow, .text-orange, .text-brand-orange');
+                const hardEl = document.querySelector('.text-hard-s, .text-difficulty-hard, .text-pink, .text-red, .text-red-s');
+                
+                if (easyEl && easyEl.textContent?.trim() === 'Easy') difficulty = 'Easy';
+                else if (mediumEl && mediumEl.textContent?.trim() === 'Medium') difficulty = 'Medium';
+                else if (hardEl && hardEl.textContent?.trim() === 'Hard') difficulty = 'Hard';
             }
 
             // Extract language
