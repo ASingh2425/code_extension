@@ -112,15 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         }
 
-                        // 3. Calculate Today Count
-                        const todayStr = new Date().toLocaleDateString();
-                        const todayCount = history.filter(h => new Date(h.date).toLocaleDateString() === todayStr).length;
-
-                        // 4. Calculate Day Streak
+                        // 3. Calculate Day Streak
                         const streak = calculateStreak(history);
 
                         // Render UI
-                        document.getElementById('today-solves')!.textContent = todayCount.toString();
                         document.getElementById('total-solves')!.textContent = totalSolved.toString();
                         document.getElementById('current-streak')!.textContent = streak.toString();
 
@@ -134,17 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Local storage fallback
                         chrome.storage.local.get({ synced_submissions: [] }, (localRes) => {
                             const history = localRes.synced_submissions as any[];
-                            const todayStr = new Date().toLocaleDateString();
-                            const todayCount = history.filter(h => new Date(h.date).toLocaleDateString() === todayStr).length;
                             const streak = calculateStreak(history);
                             
-                            document.getElementById('today-solves')!.textContent = todayCount.toString();
                             document.getElementById('total-solves')!.textContent = history.length.toString();
                             document.getElementById('current-streak')!.textContent = streak.toString();
                         });
                     });
             } else {
-                document.getElementById('today-solves')!.textContent = '0';
                 document.getElementById('total-solves')!.textContent = '0';
                 document.getElementById('current-streak')!.textContent = '0';
             }
