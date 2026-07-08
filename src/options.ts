@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateReadmeCheckbox = document.getElementById('update-readme') as HTMLInputElement;
     const saveBtn = document.getElementById('btn-save') as HTMLButtonElement;
     const authBtn = document.getElementById('btn-auth') as HTMLButtonElement;
+    const callbackEl = document.getElementById('oauth-callback') as HTMLElement;
+
+    // Display the dynamic callback URL for copy-pasting
+    if (callbackEl) {
+        callbackEl.textContent = chrome.identity.getRedirectURL();
+    }
 
     // Load existing settings
     chrome.storage.sync.get(
