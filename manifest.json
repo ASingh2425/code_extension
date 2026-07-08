@@ -16,7 +16,7 @@
     "*://*.geeksforgeeks.org/problems/*"
   ],
   "background": {
-    "service_worker": "src/background/index.ts",
+    "service_worker": "src/background/background.ts",
     "type": "module"
   },
   "content_scripts": [
@@ -26,7 +26,7 @@
         "*://*.allcsnotes.com/*",
         "*://*.geeksforgeeks.org/problems/*"
       ],
-      "js": ["src/content/index.ts"]
+      "js": ["src/content/content.ts"]
     }
   ],
   "action": {
