@@ -43,30 +43,53 @@ export class LeetCodeDetector implements IPlatformDetector {
     private extractAndSend(onAccepted: (submission: SubmissionData) => void): void {
         try {
             // Extract Problem Name from the URL or DOM
-            // URL format: https://leetcode.com/problems/two-sum/submissions/xxx/
             const urlParts = window.location.pathname.split('/');
             const problemSlug = urlParts[2]; // 'two-sum'
-            const problemName = problemSlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            let problemName = problemSlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
-            // Extract difficulty, language, code, runtime, etc.
-            // Since this is a SPA and the DOM changes dynamically, robust extraction often relies on querying specific classes
-            // or even intercepting the GraphQL API. For this baseline, we will mock the extraction of the code.
-            
-            // Getting the code from the Monaco editor in LeetCode is complex, typically it requires injecting a script 
-            // to access window.monaco or copying the text from the DOM lines.
-            // Here, we provide a structured placeholder logic.
-            const languageElement = document.querySelector('#editor button'); // Example selector
-            const language = languageElement ? languageElement.textContent || 'Unknown' : 'Unknown';
+            // Extract problem number if available in DOM
+            let problemNumber = '';
+            const titleEl = document.querySelector('div.text-title-large, div.text-lg.text-label-1, h4, [class*="title"]');
+            if (titleEl && titleEl.textContent) {
+                const match = titleEl.textContent.trim().match(/^(\d+)\.\s*(.*)/);
+                if (match) {
+                    problemNumber = match[1];
+                    problemName = match[2];
+                }
+            }
 
-            // Placeholder for the extracted code
-            const code = `// Solution for ${problemName}\n// Extracted by CodeSync\n\nclass Solution {\n    // Implementation here\n}`;
+            // Extract difficulty
+            let difficulty = 'Unknown';
+            if (document.querySelector('.text-easy-s, .text-difficulty-easy, [class*="easy"]')) {
+                difficulty = 'Easy';
+            } else if (document.querySelector('.text-medium-s, .text-difficulty-medium, [class*="medium"]')) {
+                difficulty = 'Medium';
+            } else if (document.querySelector('.text-hard-s, .text-difficulty-hard, [class*="hard"]')) {
+                difficulty = 'Hard';
+            }
+
+            // Extract language
+            let language = 'Unknown';
+            const buttons = Array.from(document.querySelectorAll('button'));
+            const langButton = buttons.find(b => {
+                const text = b.textContent?.trim().toLowerCase() || '';
+                return ['cpp', 'c++', 'java', 'python', 'python3', 'javascript', 'typescript', 'c', 'c#', 'rust', 'golang', 'go'].includes(text);
+            });
+            if (langButton) {
+                language = langButton.textContent?.trim() || 'Unknown';
+            }
+
+            // Fallback DOM code scraping (since Monaco virtualizes DOM, this might only get visible lines)
+            const codeLines = Array.from(document.querySelectorAll('.view-line'));
+            const fallbackCode = codeLines.map(line => line.textContent || '').join('\n');
 
             const submission: SubmissionData = {
                 platform: this.getPlatformName(),
                 problemName: problemName,
-                difficulty: 'Unknown', // Need to extract from problem description page
+                problemNumber: problemNumber,
+                difficulty: difficulty,
                 language: language.toLowerCase(),
-                code: code,
+                code: fallbackCode || `// Solution for ${problemName}`, // Will be overwritten by background script using Monaco API if successful
                 submissionDate: new Date().toISOString(),
                 submissionUrl: window.location.href,
             };
