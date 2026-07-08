@@ -17,9 +17,19 @@
         <section class="settings-group">
           <h2>GitHub Integration</h2>
           <div class="form-control">
-            <label for="github-token">Personal Access Token</label>
+            <label for="github-proxy">OAuth Proxy URL</label>
+            <input type="text" id="github-proxy" placeholder="e.g., https://codesync-oauth.vercel.app" />
+            <small>Your deployed Vercel proxy URL.</small>
+          </div>
+          <div class="form-control">
+            <label for="github-client-id">OAuth Client ID</label>
+            <input type="text" id="github-client-id" placeholder="e.g., Ov23wp..." />
+            <small>Client ID from your GitHub OAuth App.</small>
+          </div>
+          <div class="form-control">
+            <label for="github-token">Personal Access Token (PAT) Fallback</label>
             <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx" />
-            <small>Needed for pushing commits if OAuth is unavailable.</small>
+            <small>Only needed if not using the OAuth flow above.</small>
           </div>
           <div class="form-control">
             <label for="github-repo">Repository Name</label>

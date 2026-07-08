@@ -1,34 +1,51 @@
-// Replace with actual Client ID when deploying
-const GITHUB_CLIENT_ID = 'YOUR_GITHUB_CLIENT_ID';
 const SCOPES = 'repo'; // We need repo access to push commits
 
 export class GitHubAuth {
-    static async authenticate(): Promise<string> {
+    static async authenticate(proxyUrl: string, clientId: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const redirectUrl = chrome.identity.getRedirectURL();
-            const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUrl)}&scope=${SCOPES}`;
+            const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUrl)}&scope=${SCOPES}`;
 
             chrome.identity.launchWebAuthFlow(
                 {
                     url: authUrl,
                     interactive: true
                 },
-                (responseUrl) => {
+                async (responseUrl) => {
                     if (chrome.runtime.lastError || !responseUrl) {
-                        return reject(chrome.runtime.lastError?.message || 'OAuth flow failed');
+                        return reject(new Error(chrome.runtime.lastError?.message || 'OAuth flow failed'));
                     }
                     
-                    const url = new URL(responseUrl);
-                    const code = url.searchParams.get('code');
-                    
-                    if (!code) {
-                        return reject('No auth code received');
-                    }
+                    try {
+                        const url = new URL(responseUrl);
+                        const code = url.searchParams.get('code');
+                        
+                        if (!code) {
+                            return reject(new Error('No auth code received'));
+                        }
 
-                    // In a production app without a backend, we'd need a proxy to exchange the code for a token,
-                    // OR we use a Personal Access Token (PAT) input by the user for simplicity.
-                    // For now, we resolve the code.
-                    resolve(code);
+                        // Exchange code for token via Vercel Serverless Proxy
+                        const tokenResponse = await fetch(`${proxyUrl}/api/token`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ code })
+                        });
+
+                        if (!tokenResponse.ok) {
+                            throw new Error(`Token exchange failed: ${tokenResponse.statusText}`);
+                        }
+
+                        const tokenData = await tokenResponse.json();
+                        if (tokenData.access_token) {
+                            resolve(tokenData.access_token);
+                        } else {
+                            reject(new Error(tokenData.error_description || 'Failed to exchange token'));
+                        }
+                    } catch (error: any) {
+                        reject(error);
+                    }
                 }
             );
         });
