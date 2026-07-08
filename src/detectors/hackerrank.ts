@@ -35,15 +35,10 @@ export class HackerRankDetector implements IPlatformDetector {
     }
 
     private checkSuccess(): boolean {
-        const modal = document.querySelector('.congrats-wrapper, .success-msg, .congrats-heading');
-        const hasCongrats = modal && modal.textContent?.toLowerCase().includes('congratulations');
-        
-        const textMatch = Array.from(document.querySelectorAll('div, h1, h2, h3, p')).some(el => {
-            const text = el.textContent?.toLowerCase() || '';
-            return text.includes('congratulations') || text.includes('congrats!');
-        });
-
-        return !!(hasCongrats || textMatch);
+        const text = document.body.innerText?.toLowerCase() || '';
+        return text.includes('congratulations') || 
+               text.includes('congrats') || 
+               text.includes('you solved this challenge');
     }
 
     private extractAndSend(onAccepted: (submission: SubmissionData) => void): void {
