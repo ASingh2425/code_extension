@@ -91,6 +91,10 @@ export class SyncQueueManager {
                     await this.repoManager.pushSubmission(submission);
                     
                     log(`Successfully pushed ${submission.problemName}`);
+                    
+                    // Record successfully synced submission for popup statistics calculation
+                    await this.recordSyncedSubmission(submission);
+
                     queue.shift();
                     await chrome.storage.local.set({ [this.queueKey]: queue });
                 } catch (error: any) {
@@ -110,6 +114,32 @@ export class SyncQueueManager {
             }
         } finally {
             this.isSyncing = false;
+        }
+    }
+
+    private async recordSyncedSubmission(submission: SubmissionData) {
+        try {
+            const data = await chrome.storage.local.get({ synced_submissions: [] });
+            const history = data.synced_submissions as any[];
+            
+            // Check for duplicates in history (same problem, same platform, same calendar day)
+            const todayStr = new Date().toLocaleDateString();
+            const exists = history.some(h => 
+                h.problemName === submission.problemName && 
+                h.platform === submission.platform &&
+                new Date(h.date).toLocaleDateString() === todayStr
+            );
+            
+            if (!exists) {
+                history.push({
+                    problemName: submission.problemName,
+                    platform: submission.platform,
+                    date: new Date().toISOString()
+                });
+                await chrome.storage.local.set({ synced_submissions: history });
+                console.log('Recorded synced submission in history:', submission.problemName);
+            }
+        } catch (e) {
         }
     }
 }
