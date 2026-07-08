@@ -25,16 +25,20 @@ export class RepoManager {
         // e.g., LeetCode/Easy/0001 Two Sum/Solution.java
         const padNum = submission.problemNumber ? submission.problemNumber.padStart(4, '0') : '';
         const folderName = padNum ? `${padNum} ${submission.problemName}` : submission.problemName;
-        const difficulty = submission.difficulty || 'Uncategorized';
         const ext = this.getFileExtension(submission.language);
-        return `${submission.platform}/${difficulty}/${folderName}/Solution.${ext}`;
+        if (submission.difficulty) {
+            return `${submission.platform}/${submission.difficulty}/${folderName}/Solution.${ext}`;
+        }
+        return `${submission.platform}/${folderName}/Solution.${ext}`;
     }
 
     private buildMetadataPath(submission: SubmissionData): string {
         const padNum = submission.problemNumber ? submission.problemNumber.padStart(4, '0') : '';
         const folderName = padNum ? `${padNum} ${submission.problemName}` : submission.problemName;
-        const difficulty = submission.difficulty || 'Uncategorized';
-        return `${submission.platform}/${difficulty}/${folderName}/metadata.json`;
+        if (submission.difficulty) {
+            return `${submission.platform}/${submission.difficulty}/${folderName}/metadata.json`;
+        }
+        return `${submission.platform}/${folderName}/metadata.json`;
     }
 
     async pushSubmission(submission: SubmissionData) {

@@ -61,20 +61,10 @@ export class HackerRankDetector implements IPlatformDetector {
         const langDropdown = document.querySelector('.select2-selection__rendered, [class*="language-select"]');
         const language = langDropdown ? langDropdown.textContent || 'unknown' : 'unknown';
 
-        // Try to find the problem difficulty if displayed on the page
-        let difficulty = 'Uncategorized';
-        const diffBadge = Array.from(document.querySelectorAll('span, div')).find(el => {
-            const text = el.textContent?.trim().toLowerCase();
-            return text === 'easy' || text === 'medium' || text === 'hard';
-        });
-        if (diffBadge) {
-            difficulty = diffBadge.textContent!.trim();
-        }
-
         const submission: SubmissionData = {
             platform: this.getPlatformName(),
             problemName: problemName.trim(),
-            difficulty: difficulty,
+            difficulty: '', // Disabled difficulty categorisation for HackerRank as requested
             language: language.toLowerCase().trim(),
             code: '// HackerRank code extraction placeholder', // Will be filled from Monaco/editor query
             submissionDate: new Date().toISOString(),
