@@ -59,6 +59,15 @@ export class SyncQueueManager {
     }
 
     async syncPending() {
+        const logs: string[] = [];
+        const log = (msg: string) => {
+            console.log(msg);
+            logs.push(msg);
+            chrome.storage.local.set({ debug_logs: logs });
+        };
+
+        log(`Starting syncPending. isSyncing: ${this.isSyncing}, hasRepoManager: ${!!this.repoManager}`);
+
         if (this.isSyncing || !navigator.onLine || !this.repoManager) {
             return;
         }
@@ -67,21 +76,23 @@ export class SyncQueueManager {
         try {
             const data = await chrome.storage.local.get({ [this.queueKey]: [] });
             let queue: SubmissionData[] = data[this.queueKey] as SubmissionData[];
+            
+            log(`Found ${queue.length} items in queue.`);
 
             while (queue.length > 0) {
                 const submission = queue[0];
                 
                 try {
+                    log(`Attempting to push submission: ${submission.problemName}`);
                     await this.repoManager.pushSubmission(submission);
                     
-                    // Remove from queue
+                    log(`Successfully pushed ${submission.problemName}`);
                     queue.shift();
                     await chrome.storage.local.set({ [this.queueKey]: queue });
                 } catch (error: any) {
-                    console.error('Failed to sync submission:', error);
+                    log(`Failed to push: ${error.message || error}`);
                     this.isSyncing = false;
                     
-                    // Send error to active tab
                     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                         if (tabs[0]?.id) {
                             chrome.tabs.sendMessage(tabs[0].id, {
