@@ -60,7 +60,6 @@ export class LeetCodeDetector implements IPlatformDetector {
 
             // Extract difficulty robustly (proximity-based search relative to title, with global fallback)
             let difficulty = 'Unknown';
-            const titleEl = document.querySelector('div.text-title-large, div.text-lg.text-label-1, h4, [class*="title"]');
             if (titleEl) {
                 let parent = titleEl.parentElement;
                 for (let i = 0; i < 4 && parent; i++) {
