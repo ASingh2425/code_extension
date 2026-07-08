@@ -40,9 +40,14 @@ export class CodeChefDetector implements IPlatformDetector {
         const successBadge = document.querySelector('.submission-status, .correct-answer, [class*="correct-answer"], [class*="status-ac"]');
         const hasCorrectAnswer = successBadge && successBadge.textContent?.toLowerCase().includes('correct');
         
-        const textMatch = Array.from(document.querySelectorAll('div, span, h2, p')).some(el => {
+        const textMatch = Array.from(document.querySelectorAll('div, span, h2, p, h3')).some(el => {
             const text = el.textContent?.trim().toLowerCase();
-            return text === 'correct answer' || text === 'ac' || text === 'accepted';
+            return text === 'correct answer' || 
+                   text === 'ac' || 
+                   text === 'accepted' || 
+                   text?.includes('great job, keep it up') || 
+                   text?.includes('total score = 100%') ||
+                   text === 'result - correct';
         });
 
         return !!(hasCorrectAnswer || textMatch);
