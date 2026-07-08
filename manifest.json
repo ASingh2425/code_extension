@@ -15,7 +15,8 @@
     "*://leetcode.com/problems/*",
     "*://*.allcsnotes.com/*",
     "*://*.geeksforgeeks.org/problems/*",
-    "*://*.codechef.com/*"
+    "*://*.codechef.com/*",
+    "*://*.hackerrank.com/*"
   ],
   "background": {
     "service_worker": "src/background/background.ts",
@@ -27,7 +28,8 @@
         "*://leetcode.com/problems/*",
         "*://*.allcsnotes.com/*",
         "*://*.geeksforgeeks.org/problems/*",
-        "*://*.codechef.com/*"
+        "*://*.codechef.com/*",
+        "*://*.hackerrank.com/*"
       ],
       "js": ["src/content/content.ts"]
     }
