@@ -16,6 +16,13 @@ function handleAcceptedSubmission(submission: SubmissionData) {
 
 const host = window.location.hostname;
 
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'SYNC_ERROR') {
+        console.error('CodeSync GitHub Push Error:', message.error);
+        alert('CodeSync GitHub Push Error:\n' + message.error + '\n\nPlease check your repository settings and try again.');
+    }
+});
+
 if (host.includes('leetcode.com')) {
     console.log('Loading LeetCode Detector');
     new LeetCodeDetector().startObserving(handleAcceptedSubmission);

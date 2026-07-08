@@ -73,13 +73,24 @@ export class SyncQueueManager {
                 
                 try {
                     await this.repoManager.pushSubmission(submission);
-                    // Successfully pushed, remove from queue
+                    
+                    // Remove from queue
                     queue.shift();
                     await chrome.storage.local.set({ [this.queueKey]: queue });
-                } catch (error) {
+                } catch (error: any) {
                     console.error('Failed to sync submission:', error);
-                    // Stop syncing on first error (e.g., API limit, auth error)
-                    break;
+                    this.isSyncing = false;
+                    
+                    // Send error to active tab
+                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                        if (tabs[0]?.id) {
+                            chrome.tabs.sendMessage(tabs[0].id, {
+                                type: 'SYNC_ERROR',
+                                error: error.message || 'Unknown error during sync to GitHub'
+                            }).catch(() => {});
+                        }
+                    });
+                    return; // Stop trying to sync if one fails
                 }
             }
         } finally {
