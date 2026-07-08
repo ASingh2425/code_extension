@@ -8,25 +8,23 @@ export class CodeChefDetector implements IPlatformDetector {
     startObserving(onAccepted: (submission: SubmissionData) => void): void {
         console.log('Started observing CodeChef...');
 
+        // 1. Check immediately on load (crucial if CodeChef redirects to a static solution page)
+        if (this.checkSuccess()) {
+            console.log('CodeChef Correct Answer detected immediately on load!');
+            this.extractAndSend(onAccepted);
+            // Re-trigger observer in 5 seconds to observe future actions
+            setTimeout(() => this.startObserving(onAccepted), 5000);
+            return;
+        }
+
+        // 2. Fall back to MutationObserver if success state isn't already present
         const observer = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
                 if (mutation.type === 'childList') {
-                    // CodeChef shows "Correct Answer" in a badge or popup upon success
-                    // Selectors look for common submission success statuses on CodeChef
-                    const successBadge = document.querySelector('.submission-status, .correct-answer, [class*="correct-answer"]');
-                    const hasCorrectAnswer = successBadge && successBadge.textContent?.toLowerCase().includes('correct answer');
-                    
-                    // Fallback: Check if global text contains "Correct Answer" in a newly added element
-                    const textMatch = Array.from(document.querySelectorAll('div, span, h2')).some(el => 
-                        el.textContent?.trim() === 'Correct Answer'
-                    );
-
-                    if (hasCorrectAnswer || textMatch) {
-                        console.log('CodeChef Correct Answer detected!');
+                    if (this.checkSuccess()) {
+                        console.log('CodeChef Correct Answer detected via mutation!');
                         this.extractAndSend(onAccepted);
                         observer.disconnect();
-                        
-                        // Reconnect observer after 5 seconds to catch future submissions
                         setTimeout(() => this.startObserving(onAccepted), 5000);
                         break;
                     }
@@ -35,6 +33,19 @@ export class CodeChefDetector implements IPlatformDetector {
         });
 
         observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    private checkSuccess(): boolean {
+        // Selectors look for common submission success statuses on CodeChef
+        const successBadge = document.querySelector('.submission-status, .correct-answer, [class*="correct-answer"], [class*="status-ac"]');
+        const hasCorrectAnswer = successBadge && successBadge.textContent?.toLowerCase().includes('correct');
+        
+        const textMatch = Array.from(document.querySelectorAll('div, span, h2, p')).some(el => {
+            const text = el.textContent?.trim().toLowerCase();
+            return text === 'correct answer' || text === 'ac' || text === 'accepted';
+        });
+
+        return !!(hasCorrectAnswer || textMatch);
     }
 
     private extractAndSend(onAccepted: (submission: SubmissionData) => void): void {
