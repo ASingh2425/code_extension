@@ -1,9 +1,12 @@
+import { GitHubAPI } from './github/api';
+
 document.addEventListener('DOMContentLoaded', () => {
     const tokenInput = document.getElementById('github-token') as HTMLInputElement;
     const repoInput = document.getElementById('github-repo') as HTMLInputElement;
     const autoSyncCheckbox = document.getElementById('auto-sync') as HTMLInputElement;
     const updateReadmeCheckbox = document.getElementById('update-readme') as HTMLInputElement;
     const saveBtn = document.getElementById('btn-save') as HTMLButtonElement;
+    const authBtn = document.getElementById('btn-auth') as HTMLButtonElement;
 
     // Load existing settings
     chrome.storage.sync.get(
@@ -15,6 +18,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (items.update_readme !== undefined) updateReadmeCheckbox.checked = items.update_readme as boolean;
         }
     );
+
+    authBtn.addEventListener('click', async () => {
+        const token = tokenInput.value.trim();
+        if (!token) {
+            alert('Please enter a Personal Access Token first.');
+            return;
+        }
+
+        const originalText = authBtn.textContent;
+        authBtn.textContent = 'Verifying...';
+        authBtn.disabled = true;
+
+        let authenticatedUser = null;
+
+        try {
+            const api = new GitHubAPI(token);
+            authenticatedUser = await api.getUser();
+            
+            authBtn.textContent = `Authenticated as ${authenticatedUser.login}`;
+            authBtn.classList.add('success');
+            
+            // Auto-save the token if successful
+            chrome.storage.sync.set({ github_token: token });
+        } catch (error) {
+            authBtn.textContent = 'Authentication Failed';
+            authBtn.style.backgroundColor = '#ef4444';
+            console.error('Authentication error:', error);
+        } finally {
+            setTimeout(() => {
+                if (authBtn.textContent !== `Authenticated as ${authenticatedUser?.login}`) {
+                    authBtn.textContent = originalText;
+                }
+                authBtn.disabled = false;
+                authBtn.classList.remove('success');
+                authBtn.style.backgroundColor = '';
+            }, 3000);
+        }
+    });
 
     // Save settings
     saveBtn.addEventListener('click', () => {
