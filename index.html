@@ -1,13 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dsa_extension</title>
+    <title>CodeSync Dashboard</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
-  <body>
-    <div id="app"></div>
+  <body class="dark-mode">
+    <div class="app-container">
+      <header class="header">
+        <h1>CodeSync</h1>
+        <div class="status-badge connected">Connected</div>
+      </header>
+      
+      <main class="dashboard">
+        <section class="repo-info">
+          <h2>Repository</h2>
+          <p id="repo-name">ASingh2425/DSA_Practice</p>
+          <p class="last-sync">Recent Sync: <span id="last-sync-time">Just now</span></p>
+        </section>
+
+        <section class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="today-solves">4</span>
+            <span class="stat-label">Today</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="total-solves">142</span>
+            <span class="stat-label">Total Solved</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="current-streak">12</span>
+            <span class="stat-label">Day Streak</span>
+          </div>
+        </section>
+
+        <section class="actions">
+          <button id="btn-sync" class="btn primary">Sync Now</button>
+          <button id="btn-repo" class="btn secondary">Open Repository</button>
+          <button id="btn-stats" class="btn secondary">Export Stats</button>
+          <button id="btn-settings" class="btn icon-btn" title="Settings">⚙️</button>
+        </section>
+      </main>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,60 +1,61 @@
-import './style.css'
-import typescriptLogo from './assets/typescript.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import { setupCounter } from './counter.ts'
+document.addEventListener('DOMContentLoaded', () => {
+    const repoNameEl = document.getElementById('repo-name') as HTMLParagraphElement;
+    const lastSyncEl = document.getElementById('last-sync-time') as HTMLSpanElement;
+    const btnSync = document.getElementById('btn-sync') as HTMLButtonElement;
+    const btnRepo = document.getElementById('btn-repo') as HTMLButtonElement;
+    const btnSettings = document.getElementById('btn-settings') as HTMLButtonElement;
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+    // Load data from storage
+    chrome.storage.sync.get(['github_repo'], (items) => {
+        if (items.github_repo) {
+            repoNameEl.textContent = items.github_repo;
+        } else {
+            repoNameEl.textContent = 'Not Configured';
+            repoNameEl.style.color = '#ef4444';
+        }
+    });
 
-<div class="ticks"></div>
+    // We'd typically load stats from local storage here
+    // chrome.storage.local.get(['stats'], ...)
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://www.typescriptlang.org" target="_blank">
-          <img class="button-icon" src="${typescriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+    // Open settings page
+    btnSettings.addEventListener('click', () => {
+        chrome.runtime.openOptionsPage();
+    });
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+    // Open repository in new tab
+    btnRepo.addEventListener('click', () => {
+        chrome.storage.sync.get(['github_repo'], (items) => {
+            if (items.github_repo) {
+                window.open(`https://github.com/${items.github_repo}`, '_blank');
+            } else {
+                alert('Please configure a repository in Settings first.');
+            }
+        });
+    });
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+    // Trigger manual sync
+    btnSync.addEventListener('click', () => {
+        const originalText = btnSync.textContent;
+        btnSync.textContent = 'Syncing...';
+        btnSync.disabled = true;
+
+        // Message background script to trigger sync
+        // chrome.runtime.sendMessage({ type: 'MANUAL_SYNC' }, (response) => { ... });
+
+        // Mock delay
+        setTimeout(() => {
+            btnSync.textContent = 'Synced!';
+            btnSync.classList.add('success');
+            
+            const now = new Date();
+            lastSyncEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            setTimeout(() => {
+                btnSync.textContent = originalText;
+                btnSync.disabled = false;
+                btnSync.classList.remove('success');
+            }, 2000);
+        }, 1500);
+    });
+});
