@@ -10,7 +10,7 @@ export class SyncQueueManager {
         // We'll initialize the RepoManager later once OAuth is handled
         chrome.storage.local.get(['github_token', 'github_owner', 'github_repo'], (result) => {
             if (result.github_token && result.github_owner && result.github_repo) {
-                this.repoManager = new RepoManager(result.github_token, result.github_owner, result.github_repo);
+                this.repoManager = new RepoManager(result.github_token as string, result.github_owner as string, result.github_repo as string);
             }
         });
 
@@ -26,7 +26,7 @@ export class SyncQueueManager {
 
     async enqueue(submission: SubmissionData) {
         const data = await chrome.storage.local.get({ [this.queueKey]: [] });
-        const queue: SubmissionData[] = data[this.queueKey];
+        const queue: SubmissionData[] = data[this.queueKey] as SubmissionData[];
         
         // Check for duplicates
         const exists = queue.some(s => s.problemName === submission.problemName && s.platform === submission.platform && s.submissionDate === submission.submissionDate);
@@ -48,7 +48,7 @@ export class SyncQueueManager {
         this.isSyncing = true;
         try {
             const data = await chrome.storage.local.get({ [this.queueKey]: [] });
-            let queue: SubmissionData[] = data[this.queueKey];
+            let queue: SubmissionData[] = data[this.queueKey] as SubmissionData[];
 
             while (queue.length > 0) {
                 const submission = queue[0];

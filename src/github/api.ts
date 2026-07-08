@@ -6,7 +6,7 @@ export class GitHubAPI {
         this.token = token;
     }
 
-    private async request(endpoint: string, options: RequestInit = {}) {
+    public async request(endpoint: string, options: RequestInit = {}) {
         const url = `${this.baseUrl}${endpoint}`;
         const headers = {
             'Authorization': `Bearer ${this.token}`,

@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.sync.get(
         ['github_token', 'github_repo', 'auto_sync', 'update_readme'],
         (items) => {
-            if (items.github_token) tokenInput.value = items.github_token;
-            if (items.github_repo) repoInput.value = items.github_repo;
-            if (items.auto_sync !== undefined) autoSyncCheckbox.checked = items.auto_sync;
-            if (items.update_readme !== undefined) updateReadmeCheckbox.checked = items.update_readme;
+            if (items.github_token) tokenInput.value = items.github_token as string;
+            if (items.github_repo) repoInput.value = items.github_repo as string;
+            if (items.auto_sync !== undefined) autoSyncCheckbox.checked = items.auto_sync as boolean;
+            if (items.update_readme !== undefined) updateReadmeCheckbox.checked = items.update_readme as boolean;
         }
     );
 

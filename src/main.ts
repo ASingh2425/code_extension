@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load data from storage
     chrome.storage.sync.get(['github_repo'], (items) => {
         if (items.github_repo) {
-            repoNameEl.textContent = items.github_repo;
+            repoNameEl.textContent = items.github_repo as string;
         } else {
             repoNameEl.textContent = 'Not Configured';
             repoNameEl.style.color = '#ef4444';
