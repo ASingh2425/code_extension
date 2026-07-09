@@ -1,7 +1,7 @@
 import { SubmissionData } from '../detectors/interface';
 import { SyncQueueManager } from './sync';
 
-console.log('CodeSync Background Service Worker Initialized');
+console.log('Synqora Background Service Worker Initialized');
 
 const queueManager = new SyncQueueManager();
 
