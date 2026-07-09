@@ -87,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                         const path = file.path;
                                         const isPlatform = path.startsWith('LeetCode/') || 
                                                            path.startsWith('CodeChef/') || 
-                                                           path.startsWith('GeeksforGeeks/') || 
                                                            path.startsWith('HackerRank/');
                                         return isPlatform && (path.includes('/Solution.') || path.endsWith('/metadata.json'));
                                     })

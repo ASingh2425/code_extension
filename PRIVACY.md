@@ -6,7 +6,7 @@ Synqora ("we", "our") values your privacy. This Privacy Policy describes how we 
 
 ### 1. Information Collection and Storage
 *   **Authentication Data**: Synqora does not collect, transmit, or store your GitHub credentials, passwords, or personal access tokens on any external servers. Your GitHub OAuth token is stored strictly locally inside your browser's secure `chrome.storage.sync` vault.
-*   **User Code**: The extension extracts your code submissions from LeetCode, CodeChef, HackerRank, and GeeksforGeeks only when you request a sync. This code is pushed directly and securely via HTTPS to your chosen personal GitHub repository.
+*   **User Code**: The extension extracts your code submissions from LeetCode, CodeChef, and HackerRank only when you request a sync. This code is pushed directly and securely via HTTPS to your chosen personal GitHub repository.
 *   **No Third-Party Analytics**: We do not use trackers, analytics tools, or third-party cookies. We do not collect or monitor your browsing history.
 
 ### 2. Information Usage

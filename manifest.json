@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Synqora - Sync LeetCode & CodeChef to GitHub",
+  "name": "Synqora - Sync LeetCode, CodeChef & HackerRank",
   "version": "1.0.1",
-  "description": "Sync accepted coding solutions from LeetCode, CodeChef, HackerRank, and GeeksforGeeks to your GitHub repository.",
+  "description": "Sync accepted coding solutions from LeetCode, CodeChef, and HackerRank to your GitHub repository.",
   "permissions": [
     "storage",
     "identity",
@@ -13,8 +13,6 @@
     "*://*.github.com/*",
     "https://api.github.com/*",
     "*://leetcode.com/problems/*",
-    "*://*.allcsnotes.com/*",
-    "*://*.geeksforgeeks.org/problems/*",
     "*://*.codechef.com/*",
     "*://*.hackerrank.com/*"
   ],
@@ -26,8 +24,6 @@
     {
       "matches": [
         "*://leetcode.com/problems/*",
-        "*://*.allcsnotes.com/*",
-        "*://*.geeksforgeeks.org/problems/*",
         "*://*.codechef.com/*",
         "*://*.hackerrank.com/*"
       ],

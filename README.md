@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License" />
 </p>
 
-Synqora is a unified, secure, developer-first Chrome extension that automatically synchronizes your accepted coding solutions from **LeetCode, CodeChef, HackerRank, and GeeksforGeeks** straight into a personal GitHub repository. 
+Synqora is a unified, secure, developer-first Chrome extension that automatically synchronizes your accepted coding solutions from **LeetCode, CodeChef, and HackerRank** straight into a personal GitHub repository. 
 
 Build a public coding portfolio effortlessly as you solve challenges!
 
@@ -20,7 +20,7 @@ Most existing synchronization tools are built for a single platform, suffer from
 | Feature | The Old Way (Others) | **The Synqora Way** |
 | :--- | :--- | :--- |
 | **Authentication** | Manual PAT copy-paste (Exposes full token scopes) | **1-Click OAuth Flow** (Secure token-exchange proxy) |
-| **Multi-Platform** | Multiple extensions needed for different sites | **Unified Router** (LeetCode + CodeChef + HackerRank + GFG) |
+| **Multi-Platform** | Multiple extensions needed for different sites | **Unified Router** (LeetCode + CodeChef + HackerRank) |
 | **Code Extraction** | DOM Scraping (Fails on long code due to editor virtualization) | **Monaco Buffer Querying** (Extracts directly from browser memory) |
 | **Folder Parsing** | Fragile DOM title checking (Breaks when layout updates) | **GraphQL API Queries** (Direct database metadata calls) |
 | **Statistics** | Stored in local cache (Resets on new device or cache clear) | **Live Git Trees & Commits Reconstruction** (Stateless live tracker) |
@@ -30,7 +30,7 @@ Most existing synchronization tools are built for a single platform, suffer from
 ## 🛠️ Key Features
 
 ### 1. Unified Hub Routing
-No more installing separate tools. Synqora detects accepted submissions dynamically on LeetCode, CodeChef, HackerRank, and GeeksforGeeks, routes them through a single background sync queue, and pushes them to structured subdirectories:
+No more installing separate tools. Synqora detects accepted submissions dynamically on LeetCode, CodeChef, and HackerRank, routes them through a single background sync queue, and pushes them to structured subdirectories:
 *   📁 `LeetCode/[Difficulty]/[Problem Name]/Solution.[ext]`
 *   📁 `CodeChef/[Difficulty_Bracket]/[Problem Code]/Solution.[ext]`
 *   📁 `HackerRank/[Challenge Name]/Solution.[ext]`
