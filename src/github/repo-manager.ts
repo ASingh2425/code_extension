@@ -41,8 +41,29 @@ export class RepoManager {
         return `${submission.platform}/${folderName}/metadata.json`;
     }
 
+    private async ensureRepoExists() {
+        try {
+            await this.api.getRepo(this.owner, this.repo);
+        } catch (error: any) {
+            // Check if the error is a 404 (Not Found), meaning the repo doesn't exist yet
+            if (error.message && (error.message.includes('404') || error.message.includes('Not Found'))) {
+                console.log(`Repository ${this.owner}/${this.repo} not found. Creating brand new repo...`);
+                await this.api.createRepo(this.repo, 'Synqora Repository - Automatically synced competitive programming solutions.');
+                console.log(`Repository ${this.owner}/${this.repo} created successfully.`);
+                
+                // Wait 3 seconds for GitHub to finish initializing the repository with the default branch main
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            } else {
+                throw error;
+            }
+        }
+    }
+
     async pushSubmission(submission: SubmissionData) {
         try {
+            // Ensure the repository exists before pushing
+            await this.ensureRepoExists();
+
             // 1. Get latest commit SHA on main
             const baseSha = await this.api.getBranchSha(this.owner, this.repo, 'main');
             

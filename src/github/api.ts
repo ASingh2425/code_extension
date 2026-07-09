@@ -30,7 +30,7 @@ export class GitHubAPI {
         return this.request(`/repos/${owner}/${repo}`);
     }
 
-    async createRepo(name: string, description: string = 'CodeSync Repository') {
+    async createRepo(name: string, description: string = 'Synqora Repository') {
         return this.request('/user/repos', {
             method: 'POST',
             body: JSON.stringify({
