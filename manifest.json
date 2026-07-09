@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "CodeSync",
+  "name": "Synqora - Sync LeetCode & CodeChef to GitHub",
   "version": "1.0.0",
-  "description": "Automatically sync accepted coding solutions from any coding platform to GitHub.",
+  "description": "Automatically sync accepted coding solutions from LeetCode, CodeChef, HackerRank, and GeeksforGeeks to your personal GitHub repository.",
   "permissions": [
     "storage",
     "identity",
@@ -42,6 +42,8 @@
     "open_in_tab": true
   },
   "icons": {
-    "128": "public/favicon.svg"
+    "16": "public/icon-16.png",
+    "48": "public/icon-48.png",
+    "128": "public/icon-128.png"
   }
 }

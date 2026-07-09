@@ -1,4 +1,4 @@
-# 🚀 CodeSync
+# 🚀 Synqora
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Chrome%20Extension-blue?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Extension" />
@@ -7,17 +7,17 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License" />
 </p>
 
-CodeSync is a unified, secure, developer-first Chrome extension that automatically synchronizes your accepted coding solutions from **LeetCode, CodeChef, HackerRank, and GeeksforGeeks** straight into a personal GitHub repository. 
+Synqora is a unified, secure, developer-first Chrome extension that automatically synchronizes your accepted coding solutions from **LeetCode, CodeChef, HackerRank, and GeeksforGeeks** straight into a personal GitHub repository. 
 
 Build a public coding portfolio effortlessly as you solve challenges!
 
 ---
 
-## ✨ Why CodeSync?
+## ✨ Why Synqora?
 
-Most existing synchronization tools are built for a single platform, suffer from styling fragility, or present serious security risks. CodeSync was engineered from the ground up to solve these core developer pain points:
+Most existing synchronization tools are built for a single platform, suffer from styling fragility, or present serious security risks. Synqora was engineered from the ground up to solve these core developer pain points:
 
-| Feature | The Old Way (Others) | **The CodeSync Way** |
+| Feature | The Old Way (Others) | **The Synqora Way** |
 | :--- | :--- | :--- |
 | **Authentication** | Manual PAT copy-paste (Exposes full token scopes) | **1-Click OAuth Flow** (Secure token-exchange proxy) |
 | **Multi-Platform** | Multiple extensions needed for different sites | **Unified Router** (LeetCode + CodeChef + HackerRank + GFG) |
@@ -30,19 +30,19 @@ Most existing synchronization tools are built for a single platform, suffer from
 ## 🛠️ Key Features
 
 ### 1. Unified Hub Routing
-No more installing separate tools. CodeSync detects accepted submissions dynamically on LeetCode, CodeChef, HackerRank, and GeeksforGeeks, routes them through a single background sync queue, and pushes them to structured subdirectories:
+No more installing separate tools. Synqora detects accepted submissions dynamically on LeetCode, CodeChef, HackerRank, and GeeksforGeeks, routes them through a single background sync queue, and pushes them to structured subdirectories:
 *   📁 `LeetCode/[Difficulty]/[Problem Name]/Solution.[ext]`
 *   📁 `CodeChef/[Difficulty_Bracket]/[Problem Code]/Solution.[ext]`
 *   📁 `HackerRank/[Challenge Name]/Solution.[ext]`
 
 ### 2. Monaco Editor Memory Querying
-Modern coding platforms virtualize the DOM to render only visible lines of code. Standard scrapers truncate long solutions. CodeSync executes a script directly in the page's `MAIN` world, bypasses isolation barriers, and queries the active Monaco editor model (`window.monaco.editor`) to extract the **entire code buffer** with absolute fidelity.
+Modern coding platforms virtualize the DOM to render only visible lines of code. Standard scrapers truncate long solutions. Synqora executes a script directly in the page's `MAIN` world, bypasses isolation barriers, and queries the active Monaco editor model (`window.monaco.editor`) to extract the **entire code buffer** with absolute fidelity.
 
 ### 3. Bulletproof Metadata via GraphQL
-On LeetCode, instead of reading volatile class names that change with layout updates, CodeSync communicates with LeetCode's public GraphQL API using the problem slug. It pulls the exact problem number, difficulty, and title, ensuring reliability even on submissions detail pages.
+On LeetCode, instead of reading volatile class names that change with layout updates, Synqora communicates with LeetCode's public GraphQL API using the problem slug. It pulls the exact problem number, difficulty, and title, ensuring reliability even on submissions detail pages.
 
 ### 4. CodeChef Rating Brackets
-CodeChef lists numeric difficulty ratings (e.g. `1450`) rather than standard category words. CodeSync extracts this rating and dynamically groups it into developer-friendly directories:
+CodeChef lists numeric difficulty ratings (e.g. `1450`) rather than standard category words. Synqora extracts this rating and dynamically groups it into developer-friendly directories:
 *   `< 1000` ➡️ `Beginner`
 *   `1000 - 1399` ➡️ `Easy`
 *   `1400 - 1799` ➡️ `Medium`
@@ -53,13 +53,13 @@ CodeChef lists numeric difficulty ratings (e.g. `1450`) rather than standard cat
 
 ## 📐 Architecture & Data Flow
 
-Here is how CodeSync securely routes and commits your code under the hood:
+Here is how Synqora securely routes and commits your code under the hood:
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant Page as Coding Page (LeetCode/CodeChef)
-    participant CS as CodeSync Content Script
+    participant CS as Synqora Content Script
     participant BG as Service Worker (Background)
     participant VP as Vercel OAuth Proxy
     participant GH as GitHub API
@@ -100,7 +100,7 @@ sequenceDiagram
 
 ## 🔒 Security & OAuth Proxy Deployment
 
-CodeSync uses a Serverless OAuth proxy function to securely exchange Github authorization codes for access tokens, avoiding the exposure of credentials.
+Synqora uses a Serverless OAuth proxy function to securely exchange Github authorization codes for access tokens, avoiding the exposure of credentials.
 
 ### Deploying Your Own Proxy (Optional)
 This repository includes a serverless Vercel function inside `api/token.ts`. To deploy your own instance:
@@ -110,7 +110,7 @@ This repository includes a serverless Vercel function inside `api/token.ts`. To 
 3.  Add the environment variables in your Vercel project settings:
     *   `GITHUB_CLIENT_ID` = *[Your GitHub App Client ID]*
     *   `GITHUB_CLIENT_SECRET` = *[Your GitHub App Client Secret]*
-4.  Paste your Vercel deployment URL and Client ID into the CodeSync Settings page.
+4.  Paste your Vercel deployment URL and Client ID into the Synqora Settings page.
 
 ---
 

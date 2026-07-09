@@ -1,16 +1,16 @@
-# CodeSync Privacy Policy
+# Synqora Privacy Policy
 
 Effective Date: July 8, 2026
 
-CodeSync ("we", "our") values your privacy. This Privacy Policy describes how we handle information in connection with the CodeSync Chrome Extension.
+Synqora ("we", "our") values your privacy. This Privacy Policy describes how we handle information in connection with the Synqora Chrome Extension.
 
 ### 1. Information Collection and Storage
-*   **Authentication Data**: CodeSync does not collect, transmit, or store your GitHub credentials, passwords, or personal access tokens on any external servers. Your GitHub OAuth token is stored strictly locally inside your browser's secure `chrome.storage.sync` vault.
+*   **Authentication Data**: Synqora does not collect, transmit, or store your GitHub credentials, passwords, or personal access tokens on any external servers. Your GitHub OAuth token is stored strictly locally inside your browser's secure `chrome.storage.sync` vault.
 *   **User Code**: The extension extracts your code submissions from LeetCode, CodeChef, HackerRank, and GeeksforGeeks only when you request a sync. This code is pushed directly and securely via HTTPS to your chosen personal GitHub repository.
 *   **No Third-Party Analytics**: We do not use trackers, analytics tools, or third-party cookies. We do not collect or monitor your browsing history.
 
 ### 2. Information Usage
-All data accessed by CodeSync is used solely for its core purpose: to synchronize your competitive programming solutions to your GitHub account.
+All data accessed by Synqora is used solely for its core purpose: to synchronize your competitive programming solutions to your GitHub account.
 
 ### 3. Data Transfer and Security
 Your data is transmitted securely from your local browser directly to the official GitHub API (`https://api.github.com`). If you utilize the optional OAuth Proxy token exchange serverless function, it is hosted on your personal Vercel deployment, and data is transferred securely over HTTPS.
