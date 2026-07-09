@@ -15,22 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authBtn = document.getElementById('btn-auth') as HTMLButtonElement;
     const callbackEl = document.getElementById('oauth-callback') as HTMLElement;
     
-    const lnkToggle = document.getElementById('lnk-toggle-advanced') as HTMLAnchorElement;
     const advancedWrapper = document.getElementById('advanced-wrapper') as HTMLDivElement;
-
-    // Advanced toggle listener
-    if (lnkToggle && advancedWrapper) {
-        lnkToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (advancedWrapper.style.display === 'none') {
-                advancedWrapper.style.display = 'block';
-                lnkToggle.textContent = 'Hide Advanced Developer Settings';
-            } else {
-                advancedWrapper.style.display = 'none';
-                lnkToggle.textContent = 'Show Advanced Developer Settings';
-            }
-        });
-    }
 
     // Display the dynamic callback URL for copy-pasting
     if (callbackEl) {
@@ -39,8 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load existing settings
     chrome.storage.sync.get(
-        ['github_proxy', 'github_client_id', 'github_token', 'github_repo', 'auto_sync', 'update_readme'],
+        ['github_proxy', 'github_client_id', 'github_token', 'github_repo', 'auto_sync', 'update_readme', 'dev_mode'],
         (items) => {
+            // Show developer settings only if dev_mode is set to true in storage
+            if (items.dev_mode && advancedWrapper) {
+                advancedWrapper.style.display = 'block';
+            }
             proxyInput.value = (items.github_proxy as string) || DEFAULT_PROXY;
             clientIdInput.value = (items.github_client_id as string) || DEFAULT_CLIENT_ID;
             if (items.github_token) tokenInput.value = items.github_token as string;
