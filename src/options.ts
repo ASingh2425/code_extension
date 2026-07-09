@@ -1,6 +1,9 @@
 import { GitHubAPI } from './github/api';
 import { GitHubAuth } from './github/auth';
 
+const DEFAULT_PROXY = 'https://dsa-extension.vercel.app';
+const DEFAULT_CLIENT_ID = 'Ov23lispAZRyPfHKOHGD';
+
 document.addEventListener('DOMContentLoaded', () => {
     const proxyInput = document.getElementById('github-proxy') as HTMLInputElement;
     const clientIdInput = document.getElementById('github-client-id') as HTMLInputElement;
@@ -11,6 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveBtn = document.getElementById('btn-save') as HTMLButtonElement;
     const authBtn = document.getElementById('btn-auth') as HTMLButtonElement;
     const callbackEl = document.getElementById('oauth-callback') as HTMLElement;
+    
+    const lnkToggle = document.getElementById('lnk-toggle-advanced') as HTMLAnchorElement;
+    const advancedWrapper = document.getElementById('advanced-wrapper') as HTMLDivElement;
+
+    // Advanced toggle listener
+    if (lnkToggle && advancedWrapper) {
+        lnkToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (advancedWrapper.style.display === 'none') {
+                advancedWrapper.style.display = 'block';
+                lnkToggle.textContent = 'Hide Advanced Developer Settings';
+            } else {
+                advancedWrapper.style.display = 'none';
+                lnkToggle.textContent = 'Show Advanced Developer Settings';
+            }
+        });
+    }
 
     // Display the dynamic callback URL for copy-pasting
     if (callbackEl) {
@@ -21,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.sync.get(
         ['github_proxy', 'github_client_id', 'github_token', 'github_repo', 'auto_sync', 'update_readme'],
         (items) => {
-            if (items.github_proxy) proxyInput.value = items.github_proxy as string;
-            if (items.github_client_id) clientIdInput.value = items.github_client_id as string;
+            proxyInput.value = (items.github_proxy as string) || DEFAULT_PROXY;
+            clientIdInput.value = (items.github_client_id as string) || DEFAULT_CLIENT_ID;
             if (items.github_token) tokenInput.value = items.github_token as string;
             if (items.github_repo) repoInput.value = items.github_repo as string;
             if (items.auto_sync !== undefined) autoSyncCheckbox.checked = items.auto_sync as boolean;

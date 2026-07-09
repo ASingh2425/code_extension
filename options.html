@@ -16,27 +16,37 @@
       <main class="settings-form">
         <section class="settings-group">
           <h2>GitHub Integration</h2>
-          <div class="form-control">
-            <label for="github-proxy">OAuth Proxy URL</label>
-            <input type="text" id="github-proxy" placeholder="e.g., https://codesync-oauth.vercel.app" />
-            <small>Your deployed Vercel proxy URL.</small>
-          </div>
-          <div class="form-control">
-            <label for="github-client-id">OAuth Client ID</label>
-            <input type="text" id="github-client-id" placeholder="e.g., Ov23wp..." />
-            <small>Client ID from your GitHub OAuth App.</small>
-            <small style="margin-top: 5px; display: block;">Callback URL to paste in GitHub App: <code id="oauth-callback" style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace; word-break: break-all;">Loading...</code></small>
-          </div>
-          <div class="form-control">
-            <label for="github-token">Personal Access Token (PAT) Fallback</label>
-            <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx" />
-            <small>Only needed if not using the OAuth flow above.</small>
-          </div>
+          
           <div class="form-control">
             <label for="github-repo">Repository Name</label>
-            <input type="text" id="github-repo" placeholder="e.g., ASingh2425/DSA_Practice" />
+            <input type="text" id="github-repo" placeholder="e.g., username/DSA_Practice" />
+            <small>Enter the repository where your solutions will be saved.</small>
           </div>
+          
           <button id="btn-auth" class="btn primary">Authenticate with GitHub</button>
+
+          <div style="text-align: center; margin-top: 15px;">
+            <a href="#" id="lnk-toggle-advanced" style="color: var(--text-secondary); font-size: 12px; text-decoration: none; border-bottom: 1px dotted var(--text-secondary);">Show Advanced Developer Settings</a>
+          </div>
+
+          <div id="advanced-wrapper" style="display: none; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px; transition: all 0.3s ease;">
+            <div class="form-control">
+              <label for="github-proxy">OAuth Proxy URL</label>
+              <input type="text" id="github-proxy" placeholder="e.g., https://codesync-oauth.vercel.app" />
+              <small>Your deployed Vercel proxy URL.</small>
+            </div>
+            <div class="form-control">
+              <label for="github-client-id">OAuth Client ID</label>
+              <input type="text" id="github-client-id" placeholder="e.g., Ov23wp..." />
+              <small>Client ID from your GitHub OAuth App.</small>
+              <small style="margin-top: 5px; display: block;">Callback URL to paste in GitHub App: <code id="oauth-callback" style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace; word-break: break-all;">Loading...</code></small>
+            </div>
+            <div class="form-control">
+              <label for="github-token">Personal Access Token (PAT) Fallback</label>
+              <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx" />
+              <small>Only needed if not using the OAuth flow above.</small>
+            </div>
+          </div>
         </section>
 
         <section class="settings-group">
