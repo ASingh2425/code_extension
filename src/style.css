@@ -345,3 +345,60 @@ body {
   accent-color: #6366f1;
   border-radius: 4px;
 }
+
+/* Animated horizontal scrolling background canvas */
+.bg-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  opacity: 0.04; /* Very subtle and non-distracting */
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 40px 0;
+}
+
+.bg-row {
+  display: flex;
+  white-space: nowrap;
+  gap: 100px;
+}
+
+/* Horizontal scrolling loop animations */
+.bg-row:nth-child(odd) {
+  animation: scroll-left 55s linear infinite; /* Balanced speed (not too fast/slow) */
+}
+
+.bg-row:nth-child(even) {
+  animation: scroll-right 55s linear infinite; /* Alternating direction */
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes scroll-right {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.bg-icon {
+  width: 32px;
+  height: 32px;
+  fill: #6366f1; /* purple themes */
+  filter: blur(2.5px); /* blur enough */
+}

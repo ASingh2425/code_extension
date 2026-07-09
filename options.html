@@ -7,10 +7,13 @@
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body class="dark-mode settings-page">
+    <!-- Animated rain background -->
+    <div class="bg-animation" id="bg-animation"></div>
+
     <div class="settings-container">
       <header class="header">
         <h1>Synqora Settings</h1>
-        <p class="subtitle">Configure your synchronization preferences</p>
+        <p class="subtitle" style="margin-top: 4px; font-weight: 500; color: #a5b4fc;">Welcome to Synqora - one platform for syncing your everyday coding spree on your git profile 🚀</p>
       </header>
       
       <main class="settings-form">
@@ -59,6 +62,16 @@
             <input type="checkbox" id="dark-mode-toggle" checked />
             <label for="dark-mode-toggle">Dark Mode</label>
           </div>
+        </section>
+
+        <!-- Developer Message Card -->
+        <section class="settings-group developer-card" style="margin-top: 40px; background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 12px; padding: 22px; backdrop-filter: blur(8px);">
+          <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #a5b4fc; display: flex; align-items: center; gap: 8px;">
+            <span>👩‍💻</span> Message from the Developer
+          </h3>
+          <p style="font-size: 13px; line-height: 1.6; color: #cbd5e1; font-weight: 400;">
+            Hey there! 👋 I'm Anvesha, a software engineering student who built this extension to solve a problem I faced myself. I wanted my GitHub to reflect my coding journey automatically, without the repetitive work of manually uploading every accepted solution. Existing tools didn't quite match what I was looking for, so I decided to build my own. If this extension saves you time and helps you showcase your progress, then it's already done exactly what I hoped it would. Thanks for giving it a try, and happy coding! 🚀
+          </p>
         </section>
 
         <section class="actions">
